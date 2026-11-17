@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Splash Kingdom</title>
+<meta name="description" content="Paint a sleepy gray kingdom back to life, one brushstroke at a time.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%A8%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script type="importmap">{ "imports": { "three": "./vendor/three.module.min.js" } }</script>
+</head>
+<body>
+<canvas id="game"></canvas>
+
+<!-- HUD -->
+<div id="hud" class="hidden">
+  <div id="regionCard">
+    <div id="regionName">Willowmere Village</div>
+    <div class="bar"><div id="regionFill"></div></div>
+    <div id="regionStats">0 of 20 friends awake</div>
+  </div>
+
+  <div id="tools">
+    <button class="tool" id="btnPostcard" title="Take a postcard (P)"><span class="ic">📷</span><span class="lb">Postcard</span></button>
+    <button class="tool" id="btnAlbum" title="Postcard album"><span class="ic">🖼️</span><span class="lb">Album</span></button>
+    <button class="tool" id="btnHint" title="Show me a hint (H)"><span class="ic">✨</span><span class="lb">Hint</span></button>
+    <button class="tool" id="btnSize" title="Brush size ([ and ])"><span class="ic" id="sizeIc">●</span><span class="lb" id="sizeLb">Medium</span></button>
+    <button class="tool" id="btnSound" title="Sound"><span class="ic" id="soundIc">🔊</span><span class="lb" id="soundLb">Sound on</span></button>
+    <button class="tool" id="btnHelp" title="How to play"><span class="ic">❔</span><span class="lb">Help</span></button>
+  </div>
+
+  <div id="camPad">
+    <button id="camLeft" title="Turn left (Q)">⟲</button>
+    <button id="camRight" title="Turn right (E)">⟳</button>
+    <button id="camIn" title="Zoom in">＋</button>
+    <button id="camOut" title="Zoom out">－</button>
+  </div>
+
+  <div id="paletteWrap">
+    <div id="colorName">Poppy Red</div>
+    <div id="palette"></div>
+  </div>
+
+  <div id="toasts"></div>
+</div>
+
+<div id="flash"></div>
+
+<!-- Start screen -->
+<div id="start">
+  <div class="startCard">
+    <h1 id="logo">Splash Kingdom</h1>
+    <p class="tag">A sleepy gray kingdom is waiting for its colors.<br>Fly your magic paintbrush and paint it back to life!</p>
+    <div class="howto">
+      <div><b>🖱️ Hold the left mouse button</b> and point to fly &amp; paint<br><small>(or touch and drag on a tablet)</small></div>
+      <div><b>🎨 Pick a color</b> from the paint palette at the bottom</div>
+      <div><b>↻ Look around</b> with the right mouse button, Q / E, or the ⟲ ⟳ buttons</div>
+      <div><b>✨ Wake everything up</b>, find hidden colors, and send postcards!</div>
+    </div>
+    <div class="startBtns">
+      <button id="btnBegin" class="big">Begin Painting</button>
+      <button id="btnFresh" class="link hidden">Start a brand-new kingdom</button>
+    </div>
+    <div id="startError" class="hidden"></div>
+    <p class="small">Turn your sound on — the music blossoms as the world gets more colorful 🎶</p>
+  </div>
+</div>
+
+<!-- Modal -->
+<div id="modal" class="hidden">
+  <div class="modalCard">
+    <button id="modalClose" title="Close">✕</button>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+// Safety net: if the game code can't start (opened as a file, no 3D graphics, old browser),
+// explain what happened on the start card instead of leaving a button that does nothing.
+(function () {
+  var firstError = '';
+  window.addEventListener('error', function (e) { if (!window.splash && !firstError) firstError = e.message || ''; });
+  function explain() {
+    if (window.splash) return false;
+    var box = document.getElementById('startError'), msg;
+    if (!/^https?:$/.test(location.protocol)) {
+      msg = '<b>The game needs to be opened from a web address, not straight from the file.</b><br>' +
+        'Browsers block games like this one when the file is double-clicked. Open your GitHub Pages link instead, ' +
+        'or, to test on this computer, run <code>python -m http.server 8000</code> in this folder and visit ' +
+        '<code>http://localhost:8000</code>.';
+    } else if (/webgl/i.test(firstError)) {
+      msg = '<b>This computer’s browser couldn’t start 3D graphics.</b><br>' +
+        'Try the newest Chrome or Edge, and make sure “Use graphics acceleration” is turned on in the browser’s settings.';
+    } else {
+      msg = '<b>Sorry, the game couldn’t start in this browser.</b><br>Try reloading the page, or use the newest Chrome or Edge.' +
+        (firstError ? '<br><small>(' + firstError.replace(/</g, '&lt;') + ')</small>' : '');
+    }
+    box.innerHTML = msg;
+    box.classList.remove('hidden');
+    return true;
+  }
+  document.getElementById('btnBegin').addEventListener('click', explain);
+  window.addEventListener('load', function () { setTimeout(explain, 300); });
+})();
+</script>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
